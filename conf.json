@@ -15,5 +15,6 @@
     "default_mode": "motion",
     "debug": "ON",
     "log_to_file": "OFF",
-    "usb_path": "/media/usb"
+    "usb_path": "/media/usb",
+    "images_to_usb": "ON"
 }
