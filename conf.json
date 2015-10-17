@@ -14,5 +14,6 @@
     "fifo_name": "fifo",
     "default_mode": "motion",
     "debug": "ON",
-    "log_to_file": "OFF"
+    "log_to_file": "OFF",
+    "usb_path": "/media/usb"
 }
