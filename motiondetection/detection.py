@@ -45,6 +45,8 @@ def handleFaceFrame(frame, rawCapture, conf, log):
             obj.x = x; obj.y = y; obj.w = w; obj.h = h; obj.area = w*h; obj.confirmed=True
         ts = timestamp.strftime("%A %d %B %Y %I:%M:%S%p")
         path = "{timestamp}.jpg".format(timestamp=ts)
+        if(conf["images_to_usb"] == "ON"):
+            path = conf["usb_path"]+"/"+path
         cv2.imwrite(path, frame)
         log.write("INFO", "Found {0} faces!".format(len(faces)))
         #print '\a'
@@ -126,6 +128,8 @@ def handleMotionFrame(frame, rawCapture, conf, log):
                     client.put_file(path, open(t.path, "rb"))
                 else:
                     path = "{timestamp}.jpg".format(timestamp=ts)
+                    if(conf["images_to_usb"] == "ON"):
+                        path = conf["usb_path"]+"/"+path
                     cv2.imwrite(path, frame)
                 t.cleanup()
 
