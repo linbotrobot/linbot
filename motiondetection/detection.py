@@ -100,7 +100,8 @@ def handleMotionFrame(frame, rawCapture, conf, log):
         text = "Occupied"
 
     # draw the text and timestamp on the frame
-    ts = timestamp.strftime("%A %d %B %Y %I:%M:%S%p")
+    #ts = timestamp.strftime("%A %d %B %Y %I:%M:%S%p")
+    ts = timestamp.strftime("%Y%m%d%H%M%S")
     cv2.putText(frame, "Room Status: {}".format(text), (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
     cv2.putText(frame, ts, (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255), 1)
 
@@ -129,7 +130,8 @@ def handleMotionFrame(frame, rawCapture, conf, log):
                 else:
                     path = "{timestamp}.jpg".format(timestamp=ts)
                     if(conf["images_to_usb"] == "ON"):
-                        path = conf["usb_path"]+"/"+path
+                        path = conf["usb_path"]+"/"+"{timestamp}.jpg".format(timestamp=ts)
+                        #path = conf["usb_path"]+"/"+path
                     print path
                     cv2.imwrite(path, frame)
                 t.cleanup()
