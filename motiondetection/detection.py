@@ -120,11 +120,13 @@ def handleMotionFrame(frame, rawCapture, conf, log):
                 # check to see if dropbox sohuld be used
                 if conf["use_dropbox"]:
                     # upload the image to Dropbox and cleanup the tempory image
-                    path = "{base_path}/{timestamp}.jpg".format(base_path=conf["dropbox_base_path"], timestamp=ts)path = "{timestamp}.jpg".format(timestamp=ts)
+                    path = "{base_path}/{timestamp}.jpg".format(base_path=conf["dropbox_base_path"], timestamp=ts)
+                    #path = "{timestamp}.jpg".format(timestamp=ts)
                     cv2.imwrite(path, frame)
                     client.put_file(path, open(t.path, "rb"))
                 else:
-                    
+                    path = "{timestamp}.jpg".format(timestamp=ts)
+                    cv2.imwrite(path, frame)
                 t.cleanup()
 
                 # update the last uploaded timestamp and reset the motion counter
