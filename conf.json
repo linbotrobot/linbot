@@ -1,0 +1,18 @@
+{
+    "show_video": false,
+    "use_dropbox": false,
+    "dropbox_key": "svno0af2suaucvh",
+    "dropbox_secret": "061bkes1wp7odnv",
+    "dropbox_base_path": "./temp",
+    "min_upload_seconds": 10.0,
+    "min_motion_frames": 4,
+    "camera_warmup_time": 2.5,
+    "delta_thresh": 5,
+    "resolution": [1296, 972],
+    "fps": 16,
+    "min_area": 2000,
+    "fifo_name": "fifo",
+    "default_mode": "motion",
+    "debug": "ON",
+    "log_to_file": "OFF"
+}
