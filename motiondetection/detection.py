@@ -130,6 +130,7 @@ def handleMotionFrame(frame, rawCapture, conf, log):
                     path = "{timestamp}.jpg".format(timestamp=ts)
                     if(conf["images_to_usb"] == "ON"):
                         path = conf["usb_path"]+"/"+path
+                    print path
                     cv2.imwrite(path, frame)
                 t.cleanup()
 

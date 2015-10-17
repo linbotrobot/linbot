@@ -72,11 +72,12 @@ def main(conf):
     try:
         # capture frames from the camera
         for f in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
-            cmd = safe_read(new_pipe, 1024)
-            handleCommand(cmd)
             # grab the raw NumPy array representing the image
             frame = f.array
-
+            # Get command out of pipe and execute it
+            cmd = safe_read(new_pipe, 1024)
+            handleCommand(cmd)
+            
             if(mode == "motion"):
                 # make a motion detection
                 obj = detection.handleMotionFrame(frame, rawCapture, conf, log)
@@ -92,7 +93,10 @@ def main(conf):
             elif(mode == "idle"):
                 pass
             elif(mode == "snapshot"):
-                cv2.imwrite("../linbotNET/web/snapshot.jpg", frame)
+                if(os.path.isdir("/media/usb")):
+                    cv2.imwrite("../media/usb/snapshot.jpg", frame)
+                else:
+                    cv2.imwrite("../linbotNET/web/snapshot.jpg", frame)
                 mode = "idle"
             else:
                 pass
