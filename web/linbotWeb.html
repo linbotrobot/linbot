@@ -1,0 +1,213 @@
+<html> 
+<head> 
+<title>Linbot web</title> 
+<meta http-equiv="Cache-control" content="no-store">
+
+<script language="JavaScript" type="text/javascript"> 
+<!-- 
+ 
+var RequestObj = null;
+var RefreshDelay = 3000;
+var ID = null;
+var id_AbortTimer = null;
+
+try {
+    // Firefox, Opera & Co. 
+    RequestObj = new XMLHttpRequest(); 
+} catch (err_ff) { 
+  try { 
+    // new IEs 
+    RequestObj = new ActiveXObject("Msxml2.XMLHTTP"); 
+  } catch (err_ms1) { 
+    try { 
+      // old IEs 
+      RequestObj = new ActiveXObject("Microsoft.XMLHTTP"); 
+    } catch (err_all) { 
+      // Incompatible Browser
+      RequestObj = null; 
+    } 
+  } 
+} 
+
+if (RequestObj == null) { 
+  alert ("Browser is not Ajax-ready."); 
+}
+
+/*
+State  Description
+0      The request is not initialized
+1      The request has been set up
+2      The request has been sent
+3      The request is in process
+4      The request is complete
+*/
+
+function runStop(){
+  runCommand("stop,");
+}
+
+function runURL(){
+  runCommand(document.frmMain.cboModule.value + document.frmMain.txtCommand.value);
+}
+
+function runMove(){
+  runCommand("mov," + document.frmMain.txtLeft.value + "," + document.frmMain.txtRight.value);
+}
+
+function runCommand(command){
+  var url = "/cgi-bin/test.cgi?dummy=" + new Date().getTime()+"&cmd=" + convert(command);
+  logit("Tx: " + convert(command));
+  RequestObj.open ("GET", url, true);
+  RequestObj.onreadystatechange = function(){
+    /*document.frmMain.txtLog.value += RequestObj.readyState;*/
+    if (RequestObj.readyState == 4) { 
+      if (RequestObj.status == 200) { 
+        var antwort = RequestObj.responseText;
+        clearTimeout(id_AbortTimer);
+        logit("Rx: "+antwort);
+      } else { 
+        logit("Negative server-reply: " + RequestObj.status); 
+      }
+    } 
+/*    else {
+      document.frmMain.txtLog.value += "State "+RequestObj.readyState+"\n";
+    }*/
+  }; 
+  RequestObj.send(null);
+  id_AbortTimer = setTimeout("abort()", 2500);
+}
+
+function abort() {
+  http.abort();
+  logit("Timeout !");
+}
+
+function logit(data){
+  document.frmMain.txtLog.value += data + "\n";
+  document.frmMain.txtLog.scrollTop = document.frmMain.txtLog.scrollHeight;
+}
+
+function clearLog() {
+  document.frmMain.txtLog.value = "";
+}
+
+function refreshImg() {
+  if(document.frmMain.chkRefresh.checked == true){
+    logit("Activated capture.");
+    ID = setTimeout("animation();", RefreshDelay);
+  }
+  else{
+    logit("Deactivated capture.");
+    clearTimeout(ID);
+  }
+}
+
+function convert(command) {
+  var res = command.search(/mov,(-?\d+),(-?\d+)/i);
+  var left, right;
+  if(res==0){
+    left = parseInt(parseInt(RegExp.$1)*2588/2005);
+    right = parseInt(parseInt(RegExp.$2)*2588/2005);
+    return "mov,"+left+","+right; 
+  }
+  else{
+    return command;
+  }
+}
+
+function reloadImage(){
+  logit("Animation");
+  // Reload image from server
+  document.imgCam.src = "image.jpg#dummy=" + new Date().getTime();
+  document.imgCamRedMask.src = "redmask.jpg#dummy=" + new Date().getTime();
+  document.imgCamGreenMask.src = "greenmask.jpg#dummy=" + new Date().getTime();
+}
+
+function animation() {
+  logit("Animation");
+  ID = setTimeout("animation();", RefreshDelay);
+  // Reload image from server
+  document.imgCam.src = "image.jpg#dummy=" + new Date().getTime();
+  document.imgCamRedMask.src = "redmask.jpg#dummy=" + new Date().getTime();
+  document.imgCamGreenMask.src = "greenmask.jpg#dummy=" + new Date().getTime();
+  //document.imgCam.src = "image.jpg"
+}
+
+function changeFunction(){
+  document.frmMain.txtCommand.value = "";
+}
+  
+function LoadForm() {
+  document.frmMain.chkRefresh.checked = false;
+  document.frmMain.txtCommand.value = "";
+  clearLog();
+} 
+  
+//--> 
+</script> 
+</head> 
+<body onload="LoadForm();" >
+<h1>Linbot</h1>
+<form action="#" name="frmMain">
+  Command: <br />
+  <select name="cboModule" onchange="changeFunction()">
+    <option value=""></option>
+    <option value="mov,">mov</option>
+    <option value="mov,195,-195">turn right</option>
+    <option value="mov,-195,195">turn left</option>
+    <option value="pos,">pos</option>
+    <option value="reset,">reset</option>
+    <option value="mode,position">mode position</option>
+    <option value="mode,speed">mode speed</option>
+    <option value="mode,standby">mode standby</option>
+    <option value="stop,">stop</option>
+    <option value="setspeed,">setspeed</option>
+    <option value="exit">exit</option>
+  </select>
+  <input type="text" size="30" name="txtCommand" />
+  <input type="button" name="btnSend" value="Send" onClick="runURL();" />
+  <br/><br/>
+  Left
+  <input type="text" size="5" name="txtLeft" />
+  Right
+  <input type="text" size="5" name="txtRight" />
+  <input type="button" name="btnMove" value="Move" onClick="runMove();" />
+  <br/><br/>
+  <table>
+  <tr>
+  <td></td>
+  <td><input type="button" name="btnForward" value="Forward" onClick="runCommand('setspeed,100,100');" /></td>
+  <td></td>
+  </tr>
+  <tr>
+  <td><input type="button" name="btnLeft" value="Left" onClick="runCommand('setspeed,-100,100');" /></td>
+  <td><input type="button" name="btnStop" value="Stop" onClick="runStop();" /></td>
+  <td><input type="button" name="btnRight" value="Right" onClick="runCommand('setspeed,100,-100');" /></td>
+  </tr>
+  <tr>
+  <td></td>
+  <td><input type="button" name="btnReverse" value="Reverse" onClick="runCommand('setspeed,-100,-100');" /></td>
+  <td></td>
+  </tr>
+  </table>
+  <br/><br/>
+  Log: <br/>
+  <textarea name="txtLog" rows="10" cols="70"></textarea>
+  <br/>
+  <input type="button" value="Clear" id="sel" onClick="clearLog();" />
+  <br/><br/>
+  <br/>
+  <input id="id_chkRefresh" type="checkbox" name="chkRefresh" onclick="refreshImg();" /> Auto capture
+  <input type="button" name="btnReloadImage" value="Reload" onClick="reloadImage();" />
+  <input type="button" name="btnSnapshot" value="Snapshot" onClick="runCommand('snapshot');" />
+</form>
+
+<img id="id_imgMain" name="imgCam" width="480" src="image.jpg" />
+<br />
+<!--
+<img id="id_imgMainRedMask" name="imgCamRedMask" width="480" src="redmask.jpg" />
+<br />
+<img id="id_imgMainGreenMask" name="imgCamGreenMask" width="480" src="greenmask.jpg" />
+-->
+</body> 
+</html>
