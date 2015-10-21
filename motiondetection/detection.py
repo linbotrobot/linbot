@@ -12,12 +12,28 @@ import cv2
 avg = None
 lastUploaded = datetime.datetime.now()
 motionCounter = 0
+lastTimelapse = datetime.datetime.now()
 
 class motionObject:
     x=0; y=0; w=0; h=0; area=0; confirmed=False
     
     def reset(self):
         self.x=0; self.y=0; self.w=0; self.h=0; self.area=0; self.confirmed=False
+
+def handleTimelaps(frame, rawCapture, conf, log):
+    global lastTimelapse
+    
+    timestamp = datetime.datetime.now()
+    elapsed = timestamp - lastTimelapse
+    #print elapsed
+    if( elapsed.seconds > conf["timelapse"]):
+        ts = timestamp.strftime("%Y%m%d%H%M%S")
+        path = "{timestamp}.jpg".format(timestamp=ts)
+        if(conf["images_to_usb"] == "ON"):
+            path = conf["usb_path"]+"/"+path
+        cv2.imwrite(path, frame)
+        log.write("INFO", "Take a timelapse picture")
+        lastTimelapse = timestamp
 
 def handleFaceFrame(frame, rawCapture, conf, log):
     global avg

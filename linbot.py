@@ -38,6 +38,8 @@ def handleCommand(cmd):
             mode = cmd
         elif(cmd == "snapshot"):
             mode = cmd
+        elif(cmd == "timelapse"):
+            mode = cmd
         else:
             mode = cmd
 
@@ -92,6 +94,8 @@ def main(conf):
                     log.write("INFO", "Area: {}, x: {}".format(obj.area, obj.x))
             elif(mode == "idle"):
                 pass
+            elif(mode == "timelapse"):
+                detection.handleTimelaps(frame, rawCapture, conf, log)
             elif(mode == "snapshot"):
                 if(os.path.isdir("/media/usb")):
                     cv2.imwrite("../media/usb/snapshot.jpg", frame)
